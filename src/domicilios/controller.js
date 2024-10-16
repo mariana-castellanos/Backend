@@ -32,6 +32,20 @@ const createPedido = async (req, res) => {
     }
 };
 
+
+const getPedidosDomiciliario = async (req, res) => {
+    const { id_domiciliario, estado } = req.query;
+  
+    try {
+      const results = await pool.query(queries.getPedidosByDomiciliario, [id_domiciliario, estado]);
+      res.status(200).json(results.rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error en el servidor al obtener pedidos' });
+    }
+  };
+
 module.exports = {
     createPedido,
+    getPedidosDomiciliario
 };

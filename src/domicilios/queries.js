@@ -23,9 +23,17 @@ const incrementarPedidosDomiciliario = `
   WHERE id = $1;
 `;
 
+const getPedidosByDomiciliario = `
+  SELECT p.*, u.nombre, u.direccion, u.cel 
+  FROM pedidos p
+  JOIN usuarios u ON p.id_cliente = u.id
+  WHERE p.id_domiciliario = $1 AND p.estado = $2;
+`;
+
 module.exports = {
     getDomiciliarioMenosPedidos,
     createPedido,
     addProductoToPedido,
-    incrementarPedidosDomiciliario
+    incrementarPedidosDomiciliario,
+    getPedidosByDomiciliario
 };
