@@ -45,7 +45,30 @@ const getPedidosDomiciliario = async (req, res) => {
     }
   };
 
+  const updatePedido = async (req, res) => {
+    const { id } = req.params;
+    const { estado } = req.body; // Recibimos el nuevo estado del frontend
+  
+    try {
+      const result = await pool.query(
+        queries.updateStadoPedido,
+        [estado, id]
+      );
+  
+      if (result.rowCount > 0) {
+        res.status(200).json({ message: "Pedido actualizado correctamente" });
+      } else {
+        res.status(404).json({ message: "Pedido no encontrado" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error en el servidor" });
+    }
+  };
+  
+
 module.exports = {
     createPedido,
-    getPedidosDomiciliario
+    getPedidosDomiciliario,
+    updatePedido
 };

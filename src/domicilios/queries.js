@@ -30,10 +30,15 @@ const getPedidosByDomiciliario = `
   WHERE p.id_domiciliario = $1 AND p.estado = $2;
 `;
 
+const updateStadoPedido = `
+ UPDATE pedidos SET estado = $1 
+ WHERE id_pedido = $2 RETURNING *
+`
 module.exports = {
     getDomiciliarioMenosPedidos,
     createPedido,
     addProductoToPedido,
     incrementarPedidosDomiciliario,
-    getPedidosByDomiciliario
+    getPedidosByDomiciliario,
+    updateStadoPedido
 };
