@@ -14,6 +14,7 @@ const login = async (req,res) => {
         }
         if (password === existUsuario.rows[0].contraseña) {
             const userData = {
+                id_usuario: existUsuario.rows[0].id,
                 name: existUsuario.rows[0].nombre,
                 role: existUsuario.rows[0].rol
             };

@@ -1,6 +1,7 @@
 const express = require ("express")
 const inventarioRoutes = require('./src/inventario/routes')
 const autenticacion = require('./src/auth/routes')
+const domicilios = require('./src/domicilios/routes')
 const cors = require("cors");
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 
 app.use('/api/v1/inventario', inventarioRoutes);
 app.use('/api/v1/auth', autenticacion);
+app.use('/api/v1/pedidos', domicilios);
 
 
 app.get("/api/home", (req,res) => {
