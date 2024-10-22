@@ -33,7 +33,7 @@ const login = async (req,res) => {
 };
 
 const register = async (req, res) => {
-    const { nombre, email, password, role, lastName, address = 'cliente' } = req.body;
+    const { nombre, email, password,  lastName, address, cel, role = 'cliente' } = req.body;
   
     try {
       // Verificar si el usuario ya existe
@@ -46,7 +46,7 @@ const register = async (req, res) => {
       // Insertar el nuevo usuario en la base de datos
       
 
-      const newUser = await pool.query(queries.createUser, [nombre, email, password,  lastName, address, role]);
+      const newUser = await pool.query(queries.createUser, [nombre, email, password,  lastName, address, cel, role]);
     
       console.log("Usuario registrado exitosamente");
       res.status(201).json({
