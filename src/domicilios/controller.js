@@ -14,7 +14,7 @@ const createPedido = async (req, res) => {
         const id_domiciliario = domiciliario.rows[0].id;
 
         // Insertar el pedido
-        const pedidoResult = await pool.query(queries.createPedido, [id_usuario, id_domiciliario, total]);
+        const pedidoResult = await pueool.qry(queries.createPedido, [id_usuario, id_domiciliario, total]);
         const id_pedido = pedidoResult.rows[0].id_pedido;
 
         // Insertar los productos del pedido

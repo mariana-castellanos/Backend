@@ -1,6 +1,6 @@
 const pool = require('../../db')
-const queries = require('./queries')
-
+const queries = require('./googleQueries')
+const passport = require("passport");
 
 const login = async (req,res) => {
     const {email, password} = req.body;
@@ -56,9 +56,45 @@ const register = async (req, res) => {
     } 
   };
 
+ // Lógica para el login con Google
+const googleAuth = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
 
+// Callback después de que Google devuelva el perfil del usuario
+const googleCallback = async (req, res) => {
+  try {
+    const { id, correo, nombre } = req.user; // Datos proporcionados por Google
+
+   
+    // Verificar si el usuario ya existe en la base de datos
+    let userResult = await queries.getUser(correo);
+    if (!userResult) {
+      // Si el usuario no existe, lo creamos con el rol por defecto 'cliente' y sin contraseña
+      const newUserResult = await queries.createUser(
+        nombre, // Nombre del usuario
+        correo, // Correo del usuario
+        "", // Contraseña vacía, ya que es un login con Google
+        "cliente" // Rol por defecto
+      );
+
+      userResult = newUserResult;
+    }
+
+    const user = userResult;
+    // Aquí puedes crear una sesión o devolver un token JWT
+    const frontendRedirectURL = `http://localhost:3000/loginSuccess?user=${encodeURIComponent(JSON.stringify(user))}`;
+    return res.redirect(frontendRedirectURL);
+
+  } catch (error) {
+    console.error("Error en Google login:", error);
+    res.status(500).json({ message: "Error en el servidor" });
+  }
+};
 
  module.exports = {
     login,
     register,
+    googleAuth,
+    googleCallback,     
  }
