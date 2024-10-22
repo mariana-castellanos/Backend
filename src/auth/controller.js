@@ -1,5 +1,6 @@
 const pool = require('../../db')
-const queries = require('./googleQueries')
+const googleQueries = require('./googleQueries')
+const queries = require("./queries")
 const passport = require("passport");
 
 const login = async (req,res) => {
@@ -32,19 +33,21 @@ const login = async (req,res) => {
 };
 
 const register = async (req, res) => {
-    const { nombre, email, password, role = 'cliente' } = req.body;
+    const { nombre, email, password, role, lastName, address = 'cliente' } = req.body;
   
     try {
       // Verificar si el usuario ya existe
       const existUsuario = await pool.query(queries.getUser, [email]);
-  
+      
       if (existUsuario.rows.length > 0) {
         return res.status(400).json({ message: "El usuario ya existe" });
       }
   
       // Insertar el nuevo usuario en la base de datos
-      const newUser = await pool.query(queries.createUser, [nombre, email, password, role]);
-  
+      
+
+      const newUser = await pool.query(queries.createUser, [nombre, email, password,  lastName, address, role]);
+    
       console.log("Usuario registrado exitosamente");
       res.status(201).json({
         message: "Usuario registrado exitosamente",
@@ -68,10 +71,10 @@ const googleCallback = async (req, res) => {
 
    
     // Verificar si el usuario ya existe en la base de datos
-    let userResult = await queries.getUser(correo);
+    let userResult = await googleQueries.getUser(correo);
     if (!userResult) {
       // Si el usuario no existe, lo creamos con el rol por defecto 'cliente' y sin contraseña
-      const newUserResult = await queries.createUser(
+      const newUserResult = await googleQueries.createUser(
         nombre, // Nombre del usuario
         correo, // Correo del usuario
         "", // Contraseña vacía, ya que es un login con Google
