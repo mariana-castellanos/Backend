@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require ("express")
 const inventarioRoutes = require('./src/inventario/routes')
 const autenticacion = require('./src/auth/routes')
@@ -5,6 +6,7 @@ const domicilios = require('./src/domicilios/routes')
 const cors = require("cors");
 const passport = require('passport');
 require("./src/auth/passportConfig");
+
 const session = require("express-session"); 
 
 const app = express();
