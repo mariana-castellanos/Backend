@@ -94,10 +94,30 @@ const getPedidosDomiciliario = async (req, res) => {
             });
             
             const mailOptions = {
+              
               from: process.env.EMAIL_USER,
               to: clienteCorreo,
               subject: 'Pedido con id: '+ id +' entregado',
               text: 'Buen día señor(a) '+clienteNombre+' le informamos que su pedido con id: '+id+' ha sido entregado',
+              attachments: [{
+                filename: 'image.png',
+                path: './database/images/Logosss.png',
+                cid: 'imagen'
+            }],
+              html:  `
+              <div style="font-family: Arial, sans-serif; color: #333;">
+                <p>Buen día señor(a) <strong>${clienteNombre}</strong>,</p>
+                <p>Le informamos que su pedido con ID: <strong>${id}</strong> ha sido entregado.</p>
+                <img src="cid:imagen" alt="Logo" style="display: block; margin: 20px auto; width: 100px; height: auto;">
+                <p style="margin-top: 20px;">Gracias por confiar en nosotros.</p>
+                <p>Atentamente,</p>
+
+                <p><strong>Papeleria Omega</strong><br>
+                Carrera 100 #139<br>
+                Teléfono: +57 123456789<br>
+                Email: mcassal14@gmail.com</p>
+              </div>
+            `,
             };
 
             await transporter.sendMail(mailOptions)
@@ -114,9 +134,42 @@ const getPedidosDomiciliario = async (req, res) => {
   };
   
 
+  const getPedidoDetalles = async (req, res) => {
+    const { id_pedido } = req.params;
+    try {
+        const result = await pool.query(queries.getPedidoDetalles, [id_pedido]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Pedido no encontrado' });
+        }
+
+        // Estructuramos la respuesta agrupando los productos en un array
+        const pedido = {
+            id_pedido: result.rows[0].id_pedido,
+            fecha: result.rows[0].fecha,
+            total: result.rows[0].total,
+            cliente_nombre: result.rows[0].cliente_nombre,
+            cliente_telefono: result.rows[0].cliente_telefono,
+            cliente_direccion: result.rows[0].cliente_direccion,
+            productos: result.rows.map(row => ({
+                nombre_producto: row.nombre_producto,
+                cantidad: row.cantidad,
+                precio: row.precio
+            }))
+        };
+
+        res.status(200).json(pedido);
+    } catch (error) {
+        console.error('Error al obtener detalles del pedido:', error);
+        res.status(500).json({ error: 'Error al obtener los detalles del pedido' });
+    }
+};
+
+
 module.exports = {
     createPedido,
     getPedidosDomiciliario,
     updatePedido,
-    getPedidosCliente
+    getPedidosCliente,
+    getPedidoDetalles
 };

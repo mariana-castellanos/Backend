@@ -1,9 +1,11 @@
 const getDomiciliarioMenosPedidos = `
-  SELECT id
-  FROM usuarios
-  WHERE rol = 'domiciliario'
-  ORDER BY numero_pedidos ASC
-  LIMIT 1;
+  SELECT u.id, COUNT(p.id_pedido) AS pedidos_pendientes
+FROM usuarios u
+LEFT JOIN pedidos p ON u.id = p.id_domiciliario AND p.estado = 'pendiente'
+WHERE u.rol = 'domiciliario'
+GROUP BY u.id
+ORDER BY pedidos_pendientes ASC
+LIMIT 1;
 `;
 
 const createPedido = `
@@ -47,6 +49,26 @@ const getEmailByIdPedido = `
        JOIN usuarios ON pedidos.id_cliente = usuarios.id 
        WHERE pedidos.id_pedido = $1
 `
+
+const getPedidoDetalles = `
+SELECT 
+    p.id_pedido,
+    p.fecha,
+    p.total,
+    u.nombre AS cliente_nombre,
+    u.cel AS cliente_telefono,
+    u.direccion AS cliente_direccion,
+    pr.nombre_producto, -- Obtiene el nombre del producto
+    pp.cantidad,
+    pp.precio
+FROM pedidos p
+JOIN usuarios u ON p.id_cliente = u.id 
+JOIN productos_pedido pp ON p.id_pedido = pp.id_pedido
+JOIN productos pr ON pp.id_producto = pr.id_producto -- Join con la tabla de productos
+WHERE p.id_pedido = $1;
+`;
+
+
 module.exports = {
     getDomiciliarioMenosPedidos,
     createPedido,
@@ -55,5 +77,6 @@ module.exports = {
     getPedidosByDomiciliario,
     updateStadoPedido,
     getEmailByIdPedido,
-    getPedidosByCliente
+    getPedidosByCliente,
+    getPedidoDetalles
 };
