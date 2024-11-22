@@ -3,6 +3,7 @@ const express = require ("express")
 const inventarioRoutes = require('./src/inventario/routes')
 const autenticacion = require('./src/auth/routes')
 const domicilios = require('./src/domicilios/routes')
+const usuario = require('./src/usuario/routes')
 const cors = require("cors");
 const passport = require('passport');
 require("./src/auth/passportConfig");
@@ -30,7 +31,7 @@ app.use('/api/v1/auth', autenticacion);
 app.use(passport.initialize());
 app.use(passport.session()); 
 app.use('/api/v1/pedidos', domicilios);
-
+app.use('/api/v1/usuario', usuario)
 
 app.get("/api/home", (req,res) => {
     res.json({message: "Hello World"});
